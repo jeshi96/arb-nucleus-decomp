@@ -335,6 +335,8 @@ void KTruss_ht(Graph& GA, size_t num_buckets = 16) {
   em_t.reportTotal("EdgeMap time");
   decrement_t.reportTotal("Decrement trussness time");
 
+  std::cout << "Max core: " << k_max << std::endl;
+
   // == Important: The actual trussness is the stored trussness value + 1.
   // Edges with trussness 0 had their values stored as std::numeric_limits<int>::max()
   std::cout << "iters = " << iter << std::endl;
