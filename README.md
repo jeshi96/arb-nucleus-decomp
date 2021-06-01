@@ -114,8 +114,8 @@ Running Code
 -------
 The applications take the input graph as input, as well as flags to specify
 the parameters of the (r, s) nucleus decomposition algorithm and desired 
-optimizations. Note that the "-s" flag must be set to indicate a symmetric 
-(undirected) graph, and the "-rounds 1" argument must be passed in.
+optimizations. Note that the `-s` flag must be set to indicate a symmetric 
+(undirected) graph, and the `-rounds 1` argument must be passed in.
 
 The options for arguments are:
 * `--r_clique` followed by an integer specifying r
@@ -123,8 +123,9 @@ The options for arguments are:
 * `--numberOfLevels` followed by a string, which must be `ONE_LEVEL`, `TWO_LEVEL`, or `MULTI_LEVEL`
 * `--numberOfMultiLevels` followed by an integer which must be less than or equal to r, specifying 
 the number of levels desired if the `MULTI_LEVEL` option is chosen (this argument is ignored 
-if `ONE_LEVEL` or `TWO_LEVEL` are chosen)
-* `--inverseIndexMap` followed by a string, which must be `BINARY_SEARCH` or `STORED_POINTERS`
+if `ONE_LEVEL` or `TWO_LEVEL` is chosen)
+* `--inverseIndexMap` followed by a string, which must be `BINARY_SEARCH` or `STORED_POINTERS` (this option 
+is ignored if `ONE_LEVEL` is chosen)
 * `--contiguousSpace`, which specifies that contiguous space should be used for the 
 parallel hash table T if set (this argument is ignored if `ONE_LEVEL` or `STORED_POINTERS`
 are chosen, both of which require contiguous space)
