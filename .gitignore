@@ -1,0 +1,15 @@
+*~
+*.swo
+*.swp
+
+*.a
+*.o
+*.dSYM
+*.DS_Store
+
+experimental
+cplib.sh
+
+/bazel-*
+.pytype
+.ycm_extra_conf.py
