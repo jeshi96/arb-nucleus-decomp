@@ -31,7 +31,7 @@ long strToUpdateAggregation(std::string update_agg_str) {
 template <class Graph>
 double AppNucleusDecomposition_runner(Graph& GA, commandLine P) {
   auto tt_str = P.getOptionValue("--numberOfLevels", "");
-  long num_multi_levels = P.getOptionLongValue("--numberOfMultiLevels", 2)
+  long num_multi_levels = P.getOptionLongValue("--numberOfMultiLevels", 2);
   auto inverse_index_map_str = P.getOptionValue("--inverseIndexMap", "");
   auto update_agg_str = P.getOptionValue("--updateAggregation", "");
   bool relabel = P.getOptionValue("--relabel"); // for true, relabel graph
