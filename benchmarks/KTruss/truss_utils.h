@@ -314,7 +314,7 @@ namespace truss_utils {
     auto frontier = sequence<bool>(n);
     par_for(0, n, [&] (size_t i) { frontier[i] = 1; });
     vertexSubset Frontier(n, n, frontier.begin());
-    emdf(DG, Frontier, countF<F, Graph>(DG, f), no_output);
+    truss_utils::emdf(DG, Frontier, countF<F, Graph>(DG, f), no_output);
   }
 
   template <class Graph>
