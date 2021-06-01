@@ -118,8 +118,8 @@ optimizations. Note that the `-s` flag must be set to indicate a symmetric
 (undirected) graph, and the `-rounds 1` argument must be passed in.
 
 The options for arguments are:
-* `--r_clique` followed by an integer specifying r
-* `--s_clique` followed by an integer specifying s
+* `--rClique` followed by an integer specifying r
+* `--sClique` followed by an integer specifying s
 * `--numberOfLevels` followed by a string, which must be `ONE_LEVEL`, `TWO_LEVEL`, or `MULTI_LEVEL`
 * `--numberOfMultiLevels` followed by an integer which must be less than or equal to r, specifying 
 the number of levels desired if the `MULTI_LEVEL` option is chosen (this argument is ignored 
@@ -141,8 +141,8 @@ After navigating to the `benchmarks/NucleusDecomposition/` directory, a template
 
 ```sh
 # For Bazel:
-$ bazel run :NucleusDecomposition_main -- -s -rounds 1 --r_clique 3 --s_clique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
+$ bazel run :NucleusDecomposition_main -- -s -rounds 1 --rClique 3 --sClique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
 
 # For Make:
-$ ./NucleusDecomposition -s -rounds 1 --r_clique 3 --s_clique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
+$ ./NucleusDecomposition -s -rounds 1 --rClique 3 --sClique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
 ```

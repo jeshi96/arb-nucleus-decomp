@@ -36,8 +36,8 @@ double AppNucleusDecomposition_runner(Graph& GA, commandLine P) {
   auto update_agg_str = P.getOptionValue("--updateAggregation", "");
   bool relabel = P.getOptionValue("--relabel"); // for true, relabel graph
   bool contiguous_space = P.getOptionValue("--contiguousSpace"); // for true, contiguous space
-  long r = P.getOptionLongValue("--r_clique", 3); // k as in k-cliques
-  long ss = P.getOptionLongValue("--s_clique", 4); // k as in k-cliques
+  long r = P.getOptionLongValue("--rClique", 3); // k as in k-cliques
+  long ss = P.getOptionLongValue("--sClique", 4); // k as in k-cliques
 
   long table_type = 5;
   long num_levels = 2;
