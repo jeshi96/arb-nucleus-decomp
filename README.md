@@ -23,16 +23,10 @@ Compiler:
 
 Build system:
 * [Bazel](https:://bazel.build) 2.0.0
-* Make --- our primary build system is Bazel, but we also provide Makefiles
-  for those who wish to run benchmarks without installing Bazel.
 
 To build, navigate to the `benchmarks/NucleusDecomposition/` directory, and run:
 ```sh
-# For Bazel:
 $ bazel build :NucleusDecomposition_main
-
-# For Make:
-$ make
 ```
 
 Most optionality from [GBBS](https://github.com/ParAlg/gbbs)
@@ -43,20 +37,15 @@ The default compilation is the ParlayLib scheduler (Homegrown).
 To compile with the Cilk Plus scheduler instead of the Homegrown scheduler, use
 the Bazel configuration `--config=cilk`. To compile using OpenMP instead, use
 the Bazel configuration `--config=openmp`. To compile serially instead, use the
-Bazel configuration `--config=serial`. (For the Makefiles, instead set the
-environment variables `CILK`, `OPENMP`, or `SERIAL` respectively.)
+Bazel configuration `--config=serial`.
 
 Note that the default compilation mode in bazel is to build optimized binaries
 (stripped of debug symbols). You can compile debug binaries by supplying `-c
 dbg` to the bazel build command.
 
-The following commands cleans the directory:
+The following command cleans the directory:
 ```sh
-# For Bazel:
 $ bazel clean  # removes all executables
-
-# For Make:
-$ make clean  # removes executables for the current directory
 ```
 
 Graph Format
@@ -103,10 +92,6 @@ gzip --decompress ${PWD}/wiki-Vote.txt.gz
 # Run the SNAP-to-adjacency-graph converter.
 # Run with Bazel:
 bazel run //utils:snap_converter -- -s -i ${PWD}/wiki-Vote.txt -o <output file>
-# Or run with Make:
-cd utils
-make snap_converter
-./snap_converter -s -i <input file> -o <output file>
 ```
 
 
@@ -142,7 +127,4 @@ After navigating to the `benchmarks/NucleusDecomposition/` directory, a template
 ```sh
 # For Bazel:
 $ bazel run :NucleusDecomposition_main -- -s -rounds 1 --rClique 3 --sClique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
-
-# For Make:
-$ ./NucleusDecomposition -s -rounds 1 --rClique 3 --sClique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
 ```
