@@ -39,6 +39,7 @@ double AppNucleusDecomposition_runner(Graph& GA, commandLine P) {
   bool contiguous_space = P.getOptionValue("--contiguousSpace"); // for true, contiguous space
   long r = P.getOptionLongValue("--rClique", 3); // k as in k-cliques
   long ss = P.getOptionLongValue("--sClique", 4); // k as in k-cliques
+  bool compact = P.getOptionValue("--compact");
 
   long table_type = 5;
   long num_levels = 2;
@@ -79,7 +80,7 @@ double AppNucleusDecomposition_runner(Graph& GA, commandLine P) {
   timer t; t.start();
 
   if (r == 2 && ss == 3 && table_type == 5 && efficient == 2) {
-    ktruss::KTruss_ht(GA, 16);
+    ktruss::KTruss_ht(GA, 16, compact);
   } else {
     NucleusDecomposition(GA, r, ss, table_type, num_levels, relabel, contiguous_space, verify, efficient, use_compress, output_size);
   }

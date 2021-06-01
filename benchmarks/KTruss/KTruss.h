@@ -88,7 +88,7 @@ void initialize_trussness_values(Graph& GA, MT& multi_table) {
 //   3.b Get the entries of the HT, actually decrement their coreness, see if
 //   their bucket needs to be updated and if so, update.
 template <class Graph>
-void KTruss_ht(Graph& GA, size_t num_buckets = 16) {
+void KTruss_ht(Graph& GA, size_t num_buckets = 16, bool compact = true) {
   using W = typename Graph::weight_type;
   size_t n_edges = GA.m / 2;
 
@@ -273,7 +273,7 @@ void KTruss_ht(Graph& GA, size_t num_buckets = 16) {
     // Clear the table storing the edge decrements.
     decr_tab.clear();
     iter++;
-
+if (compact) {
     del_edges.copyIn(rem_edges, rem_edges.size());
 
     if (del_edges.size > 2*GA.n) {
@@ -328,6 +328,7 @@ void KTruss_ht(Graph& GA, size_t num_buckets = 16) {
       del_edges.size = 0; // reset dyn_arr
       ct.stop();
     }
+}
   }
 
   peeling_t.stop(); peeling_t.reportTotal("peeling time");
