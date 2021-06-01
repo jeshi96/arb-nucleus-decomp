@@ -117,6 +117,8 @@ are chosen, both of which require contiguous space)
 * `--relabel`, which specifies that the graph should be relabeled if set
 * `--updateAggregation` followed by a string, which must be `SIMPLE_ARRAY`, 
 `LIST_BUFFER`, or `HASH_TABLE`
+* `--compact`, which specifies that the graph should be relabeled if set (this argument
+only applies to r = 2 and s = 3, assuming `TWO_LEVEL`, `STORED_POINTERS`, and `HASH_TABLE`)
 
 **Example Usage**
 
