@@ -6,6 +6,7 @@
 *.o
 *.dSYM
 *.DS_Store
+*.pic.d
 
 experimental
 cplib.sh
