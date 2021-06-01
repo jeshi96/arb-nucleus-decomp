@@ -1,4 +1,5 @@
 #include "NucleusDecomposition.h"
+#include "benchmarks/KTruss/KTruss.h"
 #include <math.h>
 #include <fstream>
 
@@ -72,7 +73,11 @@ double AppNucleusDecomposition_runner(Graph& GA, commandLine P) {
 
   timer t; t.start();
 
-  NucleusDecomposition(GA, r, ss, table_type, num_levels, relabel, contiguous_space, verify, efficient, use_compress, output_size);
+  if (r == 2 && ss == 3 && table_type == 5 && efficient == 2) {
+    KTruss_ht(GA, 16);
+  } else {
+    NucleusDecomposition(GA, r, ss, table_type, num_levels, relabel, contiguous_space, verify, efficient, use_compress, output_size);
+  }
 
   double tt = t.stop();
 

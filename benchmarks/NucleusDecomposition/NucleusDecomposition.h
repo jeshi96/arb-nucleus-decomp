@@ -52,8 +52,6 @@
 #include "benchmarks/CliqueCounting/induced_split.h"
 #include "benchmarks/CliqueCounting/relabel.h"
 
-#include "benchmarks/KTruss/KTruss.h"
-
 #include "multitable.h"
 #include "twotable.h"
 #include "twotable_nosearch.h"
@@ -197,11 +195,6 @@ template <class Graph>
 inline void NucleusDecomposition(Graph& GA, size_t r, size_t s, long table_type, long num_levels,
   bool relabel, bool contiguous_space, bool verify, size_t efficient, bool use_compress,
   bool output_size) {
-
-  if (r == 2 && s == 3 && table_type == 5 && efficient == 2) {
-    KTruss_ht(GA, 16);
-    return;
-  }
 
   // TODO: if r = 2
   using W = typename Graph::weight_type;
