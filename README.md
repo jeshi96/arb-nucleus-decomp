@@ -125,6 +125,5 @@ The main executable is `NucleusDecomposition_main` in the `benchmarks/NucleusDec
 After navigating to the `benchmarks/NucleusDecomposition/` directory, a template command is:
 
 ```sh
-# For Bazel:
 $ bazel run :NucleusDecomposition_main -- -s -rounds 1 --rClique 3 --sClique 4 --numberOfLevels TWO_LEVEL --inverseIndexMap STORED_POINTERS --relabel --updateAggregation LIST_BUFFER </path/to/input/graph>
 ```
