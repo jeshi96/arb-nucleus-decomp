@@ -121,7 +121,7 @@ The options for arguments are:
 * `--r_clique` followed by an integer specifying r
 * `--s_clique` followed by an integer specifying s
 * `--numberOfLevels` followed by a string, which must be `ONE_LEVEL`, `TWO_LEVEL`, or `MULTI_LEVEL`
-* `--numberOfMultiLevels` followed by an integer which must be less than r, specifying 
+* `--numberOfMultiLevels` followed by an integer which must be less than or equal to r, specifying 
 the number of levels desired if the `MULTI_LEVEL` option is chosen (this argument is ignored 
 if `ONE_LEVEL` or `TWO_LEVEL` are chosen)
 * `--inverseIndexMap` followed by a string, which must be `BINARY_SEARCH` or `STORED_POINTERS`
