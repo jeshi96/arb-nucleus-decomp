@@ -71,6 +71,11 @@ double AppNucleusDecomposition_runner(Graph& GA, commandLine P) {
 
   assert(P.getOption("-s"));
 
+  std::cout << "Internal state: " << std::endl;
+  std::cout << "tt: " << table_type << ", nl: " << num_levels << std::endl;
+  std::cout << "efficient: " << efficient << ", relabel: " << relabel << ", contig: " << contiguous_space << std::endl;
+  std::cout << "End internal state: " << std::endl;
+
   timer t; t.start();
 
   if (r == 2 && ss == 3 && table_type == 5 && efficient == 2) {
