@@ -34,6 +34,7 @@
 #include "KTruss.h"
 
 namespace gbbs {
+  namespace ktruss{
 
 template <class Graph>
 double KTruss_runner(Graph& G, commandLine P) {
@@ -64,6 +65,8 @@ double KTruss_runner(Graph& G, commandLine P) {
   exit(0); // Note that running k-truss mutates the input graph to enable the packing optimization.
   return tt;
 }
+
+  } // namespace ktruss
 
 }  // namespace gbbs
 

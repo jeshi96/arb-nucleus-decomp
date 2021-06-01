@@ -32,6 +32,7 @@
 #include "truss_utils.h"
 
 namespace gbbs {
+  namespace ktruss {
 
 template <class Graph, class MT>
 void initialize_trussness_values(Graph& GA, MT& multi_table) {
@@ -342,4 +343,5 @@ void KTruss_ht(Graph& GA, size_t num_buckets = 16) {
   std::cout << "iters = " << iter << std::endl;
 }
 
+} // namespace ktruss
 }  // namespace gbbs

@@ -24,6 +24,7 @@
 #include "pbbslib/utilities.h"
 
 namespace gbbs {
+  namespace ktruss{
 namespace truss_utils {
 
   struct edge_id {
@@ -412,4 +413,5 @@ namespace truss_utils {
   }
 
 }  // namespace truss_utils
+} // namespace ktruss
 }  // namespace gbbs
