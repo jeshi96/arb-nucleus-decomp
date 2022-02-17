@@ -7,11 +7,13 @@ from numpy import array
 
 
 
-#TODO: not correct, can't figure out what danglesum is for
+
 def cosimrank(G, u, v, alpha=0.9, 
              max_iter=100, tol=1.0e-6, weight='weight'):
   c = alpha
   alpha = 1
+  if len(G) == 0:
+    return {}
 
   if not G.is_directed():
     D = G.to_directed()
@@ -31,6 +33,7 @@ def cosimrank(G, u, v, alpha=0.9,
   x_v[v] = 1
 
   p = dict.fromkeys(W, 1.0 / N)
+
   p_v = dict.fromkeys(W, 1.0 / N)
 
   dangling_weights = p
@@ -159,22 +162,9 @@ def MaximalMatching(G):
   print("Time: ", t1-t0)
 
 def BFS(G, src=0):
-  max_deg = 0
-  for i in range(len(G)):
-    if G.degree[i] > max_deg:
-      src = i
-      max_deg = G.degree[i]
-  print("src: ", src)
   print("Start BFS")
   t0 = time.time()
   edges_generator = nx.algorithms.traversal.breadth_first_search.bfs_edges(G, src)
-  t1 = time.time()
-  print("Time: ", t1-t0)
-
-def MaximalIndependentSet(G):
-  print("Start MaximalIndependentSet")
-  t0 = time.time()
-  indep_list = nx.maximal_independent_set(G)
   t1 = time.time()
   print("Time: ", t1-t0)
 
@@ -264,8 +254,6 @@ def program_parser(G, program_str):
       ActualCoSimRank(G, u=int(sys.argv[4]), v=int(sys.argv[5]))
     else:
       CoSimRank(G)
-  elif program_str == "MaximalIndependentSet":
-    MaximalIndependentSet(G)
 
 def main():
   argv_len = len(sys.argv)

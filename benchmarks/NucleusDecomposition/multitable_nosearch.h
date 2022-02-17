@@ -7,12 +7,9 @@
 #include "gbbs/bucket.h"
 #include "gbbs/edge_map_reduce.h"
 #include "gbbs/gbbs.h"
-#include "gbbs/pbbslib/dyn_arr.h"
-#include "gbbs/pbbslib/sparse_table.h"
-#include "gbbs/pbbslib/sparse_additive_map.h"
-#include "pbbslib/assert.h"
-#include "pbbslib/list_allocator.h"
-#include "pbbslib/integer_sort.h"
+#include "gbbs/helpers/dyn_arr.h"
+#include "gbbs/helpers/sparse_table.h"
+#include "gbbs/helpers/sparse_additive_map.h"
 
 // Clique files
 #include "benchmarks/CliqueCounting/intersect.h"
@@ -51,8 +48,8 @@ namespace multitable_nosearch {
   template <class Y, class H, class C>
   struct MTable {
     using MTableY = MTable<Y, H, C>;
-    using NextMTable = pbbslib::sparse_table<uintE, MTableY*, std::hash<uintE>>;
-    using EndTable = pbbslib::sparse_table<Y, C, H>;
+    using NextMTable = gbbs::sparse_table<uintE, MTableY*, std::hash<uintE>>;
+    using EndTable = gbbs::sparse_table<Y, C, H>;
     NextMTable mtable;
     EndTable end_table;
     uintE lvl;
@@ -134,22 +131,22 @@ namespace multitable_nosearch {
     long set_table_sizes() {
       if (lvl != max_lvl) {
         if (lvl + 1 == max_lvl) {
-          table_sizes = sequence<C>(mtable.m, [](std::size_t i){ return 0; });
+          table_sizes = sequence<C>::from_function(mtable.m, [](std::size_t i){ return 0; });
           parallel_for(0, mtable.m, [&](std::size_t i){
             if (!is_uint_e_max(std::get<0>(mtable.table[i]))) {
               auto tbl = std::get<1>(mtable.table[i]);
-              tbl->total_size = 1 + ((size_t)1 << pbbslib::log2_up((size_t)(1.1 * tbl->total_size) + 1));
+              tbl->total_size = 1 + ((size_t)1 << parlay::log2_up((size_t)(1.1 * tbl->total_size) + 1));
               table_sizes[i] = tbl->total_size;
             }
           });
-          total_size = scan_inplace(table_sizes.slice(), pbbs::addm<C>());
+          total_size = parlay::scan_inplace(make_slice(table_sizes));
           return total_size;
         }
-        table_sizes = sequence<C>(mtable.m, [&](std::size_t i) -> C{
+        table_sizes = sequence<C>::from_function(mtable.m, [&](std::size_t i) -> C{
           if (is_uint_e_max(std::get<0>(mtable.table[i]))) return C{0};
           return std::get<1>(mtable.table[i])->total_size;
         });
-        total_size = scan_inplace(table_sizes.slice(), pbbs::addm<C>());
+        total_size = parlay::scan_inplace(make_slice(table_sizes));
         return total_size;
       }
       //else if (set_table_size_flag == false) {
@@ -203,7 +200,7 @@ namespace multitable_nosearch {
       if (lvl == max_lvl) {
         assert(end_table.m > 0);
         auto add_f = [&] (C* ct, const std::tuple<Y, C>& tup) {
-          pbbs::fetch_and_add(ct, (C)1);
+          gbbs::fetch_and_add(ct, (C)1);
         };
         Y key = 0;
         unsigned __int128 mask = (1ULL << (nd_global_shift_factor)) - 1;
@@ -481,7 +478,7 @@ namespace multitable_nosearch {
         auto init_induced = [&](HybridSpace_lw* induced) { induced->alloc(max_deg, r-1, DG.n, true, true); };
         auto finish_induced = [&](HybridSpace_lw* induced) { if (induced != nullptr) { delete induced; } };
         parallel_for_alloc<HybridSpace_lw>(init_induced, finish_induced, 0, DG.n, [&](size_t i, HybridSpace_lw* induced) {
-          if (DG.get_vertex(i).getOutDegree() != 0) {
+          if (DG.get_vertex(i).out_degree() != 0) {
             auto next_space = mtable.next(i, 0, r-1);
             if (next_space == nullptr) next_space = &mtable;
             induced->setup(DG, r-1, i);
@@ -494,7 +491,7 @@ namespace multitable_nosearch {
         //std::cout << "End MHash Count" << std::endl; fflush(stdout);
 
         long total = mtable.set_table_sizes();
-        space = pbbslib::new_array_no_init<X>(total);
+        space = gbbs::new_array_no_init<X>(total);
         mtable.set_end_table_rec(space);
 
         if (output_size) {
@@ -518,7 +515,7 @@ namespace multitable_nosearch {
 
       void insert_twothree(uintE v1, uintE v2, uintE v3, int r, int k) {
         auto add_f = [&] (C* ct, const std::tuple<Y, C>& tup) {
-          pbbs::fetch_and_add(ct, (C)1);
+          gbbs::fetch_and_add(ct, (C)1);
         };
         unsigned __int128 mask = (1ULL << (nd_global_shift_factor)) - 1;
 
@@ -561,6 +558,11 @@ namespace multitable_nosearch {
         return val;
       }
 
+      C update_count_atomic(std::size_t index, C update){
+        gbbs::write_add(&std::get<1>(space[index]), -1 * update);
+        return std::get<1>(space[index]);
+      }
+
       void clear_count(std::size_t index) {
         space[index] = std::make_tuple(std::get<0>(space[index]), 0);
       }
@@ -582,7 +584,7 @@ namespace multitable_nosearch {
       }
 
       template<class HH, class HG, class I>
-      void extract_indices(uintE* base2, HH is_active, HG is_inactive, I func, int r, int k) {
+      void extract_indices(uintE* base2, HH is_active, HG is_inactive, I func, int r, int k, Y xxx = std::numeric_limits<Y>::max()) {
         uintE base[10];
         assert(10 > k);
         for(std::size_t i = 0; i < k + 1; i++) {

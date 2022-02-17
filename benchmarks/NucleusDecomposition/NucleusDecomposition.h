@@ -30,12 +30,9 @@
 #include "gbbs/bucket.h"
 #include "gbbs/edge_map_reduce.h"
 #include "gbbs/gbbs.h"
-#include "gbbs/pbbslib/dyn_arr.h"
-#include "gbbs/pbbslib/sparse_table.h"
-#include "gbbs/pbbslib/sparse_additive_map.h"
-#include "pbbslib/assert.h"
-#include "pbbslib/list_allocator.h"
-#include "pbbslib/integer_sort.h"
+#include "gbbs/helpers/dyn_arr.h"
+#include "gbbs/helpers/sparse_table.h"
+#include "gbbs/helpers/sparse_additive_map.h"
 
 // Ordering files
 #include "benchmarks/DegeneracyOrder/BarenboimElkin08/DegeneracyOrder.h"
@@ -90,7 +87,7 @@ inline void NucleusDecompositionVerificationRunner(Graph& GA, DirectedGraph& DG,
   //return peel;
 }
 
-template <class bucket_t, class Graph, class DirectedGraph, class Table>
+template <class iden_t, class bucket_t, class Graph, class DirectedGraph, class Table>
 inline void NucleusDecompositionRunner(Graph& GA, DirectedGraph& DG,
   size_t r, size_t s, Table& table, 
   size_t max_deg, sequence<uintE>& rank, size_t efficient, bool relabel,
@@ -98,7 +95,14 @@ inline void NucleusDecompositionRunner(Graph& GA, DirectedGraph& DG,
 
   //std::cout << "Start count" << std::endl;
   timer t; t.start();
-  size_t count = CountCliquesNuc(DG, s, r, max_deg, &table);
+  size_t count;
+  // efficient = 3 is fake; it means efficient = 1, but run PND clique counting
+  if (efficient == 3) {
+    count = CountCliquesNucPND(DG, s, r, max_deg, &table);
+  }
+  else {
+    count = CountCliquesNuc(DG, s, r, max_deg, &table);
+  }
   double tt = t.stop();
   //std::cout << "End count" << std::endl;
 
@@ -106,7 +110,8 @@ inline void NucleusDecompositionRunner(Graph& GA, DirectedGraph& DG,
   std::cout << "### Num " << s << " cliques = " << count << "\n";
 
   timer t2; t2.start();
-  auto peel = Peel<bucket_t>(GA, DG, r, s, &table, rank, efficient, relabel, use_compress);
+  if (use_compress) auto peel = Peel_space_efficient<bucket_t, iden_t>(GA, DG, r, s, &table, rank, efficient, relabel, use_compress);
+  else auto peel = Peel<bucket_t>(GA, DG, r, s, &table, rank, efficient, relabel, use_compress);
   double tt2 = t2.stop();
   std::cout << "### Peel Running Time: " << tt2 << std::endl;
 
@@ -145,26 +150,26 @@ inline void runner(Graph& GA, Graph2& DG, size_t r, size_t s, long table_type, l
       multitable::MHash<T, H, bucket_t, decltype(rank_func)> table(r, DG, max_deg, num_levels, contiguous_space, rank_func, output_size);
       double tt = t.stop();
       std::cout << "### Table Running Time: " << tt << std::endl;
-      NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+      NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
     } else {
       auto rank_func = std::less<uintE>();
       multitable::MHash<T, H, bucket_t, decltype(rank_func)> table(r, DG, max_deg, num_levels, contiguous_space, rank_func, output_size);
       double tt = t.stop();
       std::cout << "### Table Running Time: " << tt << std::endl;
-      NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+      NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
     }
   } else if (table_type == 2) {
     t.start();
     twotable::TwolevelHash<T, H, bucket_t> table(r, DG, max_deg, contiguous_space, relabel, shift_factor);
     double tt = t.stop();
     std::cout << "### Table Running Time: " << tt << std::endl;
-    NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+    NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
   } else if (table_type == 1) {
     t.start();
     onetable::OnelevelHash<T, H, bucket_t> table(r, DG, max_deg, shift_factor);
     double tt = t.stop();
     std::cout << "### Table Running Time: " << tt << std::endl;
-    NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+    NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
   } else if (table_type == 4) {
     // Num levels matches, e.g., 2 for two level
     num_levels -= 1;
@@ -173,20 +178,20 @@ inline void runner(Graph& GA, Graph2& DG, size_t r, size_t s, long table_type, l
       multitable_nosearch::MHash<T, H, bucket_t, decltype(rank_func)> table(r, DG, max_deg, num_levels, rank_func, output_size);
       double tt = t.stop();
       std::cout << "### Table Running Time: " << tt << std::endl;
-      NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+      NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
     } else {
       auto rank_func = std::less<uintE>();
       multitable_nosearch::MHash<T, H, bucket_t, decltype(rank_func)> table(r, DG, max_deg, num_levels, rank_func, output_size);
       double tt = t.stop();
       std::cout << "### Table Running Time: " << tt << std::endl;
-      NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+      NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
     }
   } else if (table_type == 5) {
     t.start();
     twotable_nosearch::TwolevelHash<T, H, bucket_t> table(r, DG, max_deg, relabel, shift_factor);
     double tt = t.stop();
     std::cout << "### Table Running Time: " << tt << std::endl;
-    NucleusDecompositionRunner<bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
+    NucleusDecompositionRunner<T, bucket_t>(GA, DG, r, s, table, max_deg, rank, efficient, relabel, use_compress);
   } 
   //return count;
 }
@@ -195,7 +200,6 @@ template <class Graph>
 inline void NucleusDecomposition(Graph& GA, size_t r, size_t s, long table_type, long num_levels,
   bool relabel, bool contiguous_space, bool verify, size_t efficient, bool use_compress,
   bool output_size) {
-
   // TODO: if r = 2
   using W = typename Graph::weight_type;
 
@@ -232,7 +236,7 @@ inline void NucleusDecomposition(Graph& GA, size_t r, size_t s, long table_type,
   if (table_type == 1) num_levels = 1;
   else if (table_type == 2 || table_type == 5) num_levels = 2;
 
-  int num_bits_in_n = 1 + pbbslib::log2_up(DG.n + 1); //32
+  int num_bits_in_n = 1 + parlay::log2_up(DG.n + 1); //32
   int num_bytes_needed = round_up<int>(((std::max(static_cast<int>(1), 
     static_cast<int>(r - (num_levels - 1))) * num_bits_in_n) + 1), 8);
   int shift_factor = num_bits_in_n; //32
@@ -290,7 +294,7 @@ inline void NucleusDecomposition(Graph& GA, size_t r, size_t s, long table_type,
    
 
   //table.del();
-  DG.del();
+  //DG.del();
 
   //return count;
 }
